@@ -1,0 +1,1 @@
+.\spritesops.o: SpritesOps.c
