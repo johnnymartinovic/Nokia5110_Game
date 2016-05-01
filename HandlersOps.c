@@ -8,17 +8,48 @@ const unsigned char GameMinY = HeaderSeparatorYPos + 1;
 const unsigned char GameMaxY = (SCREENH - 1) - _myField_Height;
 // Systick priority
 const unsigned char SystickPriority = 1;
+// TimerB priority
+const unsigned char TimerBPriority = 0;
 
 // Ship's start life
-const unsigned char MaxShipsLife = 3;
+const unsigned char MaxShipsLife = 6;
 // Enemy's start life
-const unsigned char MaxEnemyLife = 5;
+const unsigned char MaxEnemyLife = 4;
 // number of tokens that need to be collected
 const unsigned char MaxTokens = 3;
 // number of enemies
-const unsigned long NumberOfEnemies = 8;
-// distance between enemies
-const unsigned long distanceBetweenEnemies = 8;
+const unsigned long NumberOfEnemies = 10;
+// minimal distance between enemies
+const unsigned long minDistanceBetweenEnemies = 6;
+// how many enemies has to be killed for life increasement?
+const unsigned long killedForLifeIncrease = 5;
+// number of systick that have to pass so the enemy can move forward
+const unsigned char systickNumForEnemyMoveX = 10;
+// duration of a screen which shows that the player lost (in systicks)
+const unsigned char lastScreenDuration = 100; // 2 sec
+
+
+// ************************************
+// Global variables
+// ************************************
+// enemies killed counter
+unsigned long EnemiesKilledCounter;
+// counter that increases by 1 every systick
+unsigned long SystickCounter = 0x0;
+// top score is memorized by number of killed enemies
+unsigned long EnemiesKilledBest;
+unsigned long SystickBest;
+unsigned long statisticsPrinted;
+
+// 12-bit 0 to 4095 sample.
+unsigned long ADCdata;
+// refresh screen if this flag is set;
+// it is set every systick
+unsigned long Flag;
+// counter used for field rendering in footer of the screen
+unsigned char FieldCounter = 0x0;
+// counter for last screen
+unsigned char LastScreenCounter;
 
 // define main ship
 GeneralSprite Ship;
@@ -26,23 +57,6 @@ GeneralSprite Ship;
 GeneralSprite Enemy[NumberOfEnemies];
 // define the token
 GeneralSprite Token;
-
-// number of systick that have to pass so the enemy can move forward
-const unsigned char systickNumForEnemyMoveX = 20;
-
-
-// ************************************
-// Global variables
-// ************************************
-// 12-bit 0 to 4095 sample.
-unsigned long ADCdata;
-// refresh screen if this flag is set;
-// it is set every systick
-unsigned long Flag;
-// counter that increases by 1 every systick
-unsigned long SystickCounter = 0x0;
-// counter used for field rendering in footer of the screen
-unsigned char FieldCounter = 0x0;
 
 // index necessary for navigating through sound data
 unsigned long Index = 0;
@@ -134,7 +148,7 @@ void Timer2_Init(unsigned long period){
   TIMER2_TAPR_R = 0;            // 5) bus clock resolution
   TIMER2_ICR_R = 0x00000001;    // 6) clear timer2A timeout flag
   TIMER2_IMR_R = 0x00000001;    // 7) arm timeout interrupt
-  NVIC_PRI5_R = (NVIC_PRI5_R&0x00FFFFFF); // 8) priority 0
+  NVIC_PRI5_R = (NVIC_PRI5_R&0x00FFFFFF)|(TimerBPriority<<29); // 8) priority 0
 // interrupts enabled in the main program after all devices initialized
 // vector number 39, interrupt number 23
   NVIC_EN0_R = 1<<23;           // 9) enable IRQ 23 in NVIC
@@ -198,7 +212,7 @@ unsigned long Special_Button_Pressed(void) {
 
 // random function for drawable X position. Input is width of the sprite that wants to be drawn.
 unsigned char Random_Drawable_X_Pos(unsigned char width) {
-	return ((Random() % SCREENW));
+	return (Random() % (SCREENW - width + 1));
 }
 // random function for drawable Y position. Input is height of the sprite that wants to be drawn.
 unsigned char Random_Drawable_Y_Pos(unsigned char height) {
@@ -253,61 +267,7 @@ unsigned char checkTouchingSpriteVsSprite(GeneralSprite sprite01, GeneralSprite 
 // E.g. this prevents that the user automatically shoots after he chose to rerun the game.
 unsigned char fireButtonReleased;
 
-// operations necessary for game restart
-void RestartGame(void) {
-	int i;
-	
-	// presume that the button wasn't released after game was restarted
-	fireButtonReleased = 0;
-	
-	// give life to the MOTHERSHIP!
-	Ship.x = 0;
-	Ship.life = MaxShipsLife;
-	Ship.Missile.life = 0;
-	Ship.special_weapon_status = 0;
-	
-	// give life to the BEASTS!
-	// majority of them will be off screen, and once they get
-	// in the screen, they will be alive
-	for(i=0; i<NumberOfEnemies; i++){
-    Enemy[i].x = SCREENW - Enemy[i].width - Enemy[i].width + (i/2)*(Enemy[i].width+distanceBetweenEnemies);
-    Enemy[i].y = 22 + 15*(i%2);
-    Enemy[i].life = MaxEnemyLife;
-		Enemy[i].onScreen = 0;
-    Enemy[i].Missile.x = Enemy[i].x - Enemy[i].Missile.width;
-		Enemy[i].Missile.y = Enemy[i].y - Enemy[i].height/2;
-		Enemy[i].Missile.life = 0;
-	}
-}
-
-// revive dead enemy
-void reviveEnemyIfPossible(unsigned char enemyNum) {
-	unsigned long maxX = 0;
-	// scroll through all enemies and find the furthest one
-	for(int i=0; i<NumberOfEnemies; i++){
-		// skip enemy himself or the dead ones
-		if ((i == enemyNum) || (Enemy[i].life == 0))
-			continue;
-		
-		if (Enemy[i].x > maxX)
-			maxX = Enemy[i].x;
-	}
-	
-	if (maxX + Enemy[i].width/2+ Enemy[enemyNum].width < 
-
-	Enemy[enemyNum].x = maxX + distanceBetweenEnemies;
-	Enemy[enemyNum].y = 22 + 15*(i%2);
-	Enemy[enemyNum].life = MaxEnemyLife;
-	Enemy[enemyNum].onScreen = 0;
-	Enemy[enemyNum].Missile.x = Enemy[i].x - Enemy[i].Missile.width;
-	Enemy[enemyNum].Missile.y = Enemy[i].y - Enemy[i].height/2;
-	Enemy[enemyNum].Missile.life = 0;
-}
-
-unsigned char isEnemyOnScreen(unsigned char enemyNum) {
-	return (Enemy[enemyNum].x + Enemy[enemyNum].width - 1 <= SCREENW - 1);
-}
-
+// returns true if enemy enemyNum will touch something if moved by deltaX and deltaY
 unsigned char willEnemyBumpOtherStuff(unsigned char enemyNum, signed int deltaX, signed int deltaY) {
 	int i;
 	
@@ -332,6 +292,96 @@ unsigned char willEnemyBumpOtherStuff(unsigned char enemyNum, signed int deltaX,
 		return 1;
 	
 	return 0;
+}
+
+// set coords for the enemy enemyNum so it is just a little behind the last enemy
+// Of course, some radomization is added
+void setRandomEnemyCoords(unsigned char enemyNum) {
+	unsigned long localTemp = 0;
+	int i;
+	
+	// find the last enemy
+	for(i=0; i<NumberOfEnemies; i++) {
+		// skip enemy himself or the dead ones
+		if ((i == enemyNum) || (Enemy[i].life == 0))
+			continue;
+		
+		if (Enemy[i].x > localTemp)
+			localTemp = Enemy[i].x;
+	}
+	
+	// don't put enemy far behind
+	Enemy[enemyNum].x = localTemp + Enemy[i].width/2 + 1 + minDistanceBetweenEnemies + ((Random()>>2)%5);
+	
+	// random guesses where could the enemy go. Randomize until guessed.
+	while (1) {
+		Enemy[enemyNum].y = Random_Drawable_Y_Pos(Enemy[enemyNum].height);
+		if (!willEnemyBumpOtherStuff(enemyNum, 0, 0))
+			break;
+	}
+}
+
+// operations necessary for game restart
+void RestartGame(void) {
+	int i;
+	
+	// presume that the button wasn't released after game was restarted
+	fireButtonReleased = 0;
+	
+	// give life to the MOTHERSHIP!
+	Ship.x = 0;
+	Ship.life = MaxShipsLife;
+	Ship.Missile.life = 0;
+	Ship.special_weapon_status = 0;
+	
+	// give life to the BEASTS!
+	// majority of them will be off screen, and once they get
+	// in the screen, they will be alive;
+	// but first-reset all X positions to 0 so the "setRandomEnemyCoords" can
+	// function properly
+	for(i=0; i<NumberOfEnemies; i++){
+		Enemy[i].x = 0;
+	}
+	for(i=0; i<NumberOfEnemies; i++){
+		if (i == 0) {
+			Enemy[i].x = SCREENW - Enemy[i].width - Enemy[i].width;
+			Enemy[i].y = 22;
+		}
+		else
+			setRandomEnemyCoords(i);
+    Enemy[i].life = MaxEnemyLife;
+		Enemy[i].onScreen = 0;
+    Enemy[i].Missile.x = Enemy[i].x - Enemy[i].Missile.width;
+		Enemy[i].Missile.y = Enemy[i].y - Enemy[i].height/2;
+		Enemy[i].Missile.life = 0;
+	}
+	
+	// restart last screen counter
+	LastScreenCounter = lastScreenDuration;
+	
+	// restart enemies killed
+	EnemiesKilledCounter = 0;
+	// restart systick counter
+	SystickCounter = 0;
+	
+	// statistics will be printed when the player looses
+	statisticsPrinted = 0;
+}
+
+// revive dead enemy
+void reviveEnemyIfPossible(unsigned char enemyNum) {
+	// set coords for dead enemy
+	setRandomEnemyCoords(enemyNum);
+	
+	Enemy[enemyNum].life = MaxEnemyLife;
+	Enemy[enemyNum].onScreen = 0;
+	Enemy[enemyNum].Missile.x = Enemy[enemyNum].x - Enemy[enemyNum].Missile.width;
+	Enemy[enemyNum].Missile.y = Enemy[enemyNum].y - Enemy[enemyNum].height/2;
+	Enemy[enemyNum].Missile.life = 0;
+}
+
+unsigned char isEnemyOnScreen(unsigned char enemyNum) {
+	return (Enemy[enemyNum].x + Enemy[enemyNum].width - 1 <= SCREENW - 1);
 }
 
 // turn off green LED
@@ -381,6 +431,10 @@ void GameOver(void) {
 		Nokia5110_PrintBMP(12, 41, _my_won, 0);
 	else
 		Nokia5110_PrintBMP(12, 41, _my_lost, 0);
+	
+	// decrease counter to 0
+	if (LastScreenCounter)
+		LastScreenCounter--;
 }
 
 // game engine position calculations, life etc.
@@ -528,9 +582,16 @@ void GameEngineOperations(void) {
 				}
 			}
     }
-		// if enemy is dead, create another one
 		else {
+			// if enemy is dead, create another one
 			reviveEnemyIfPossible(i);
+			
+			// this also means that the player killed enemy and
+			// counter has to be incremented
+			EnemiesKilledCounter++;
+			// ->LIFE INCREASEMENT!!! maybe?
+			if (EnemiesKilledCounter % killedForLifeIncrease == 0)
+				Ship.life++;
 		}
   }
 	
@@ -554,7 +615,7 @@ void GameEngineOperations(void) {
 	}
 	// generate token every 250 systicks (5 seconds)
 	else if ((SystickCounter % 250 == 0) && (Ship.special_weapon_status != MaxTokens)) {
-		temp02 = ((Random()>>2) % (GameMaxY-GameMinY+1-Token.height+1)) + GameMinY+Token.height-1;
+		temp02 = Random_Drawable_Y_Pos(Token.height);
 		Token.x = 78;
     Token.y = temp02;
     Token.life = 1;
@@ -572,10 +633,7 @@ void GameEngineOperations(void) {
 
 // render all data on screen
 void RenderingOperations(void) {
-	int i = 0;
-	
-	// clear whole screen buffer
-	Nokia5110_ClearBuffer();	
+	int i = 0;	
 	
 	
 	// FIELD OPERATIONS
@@ -651,29 +709,31 @@ void RenderingOperations(void) {
 		else
 			Nokia5110_PrintBMP(76 - i*7, 6, _my_coin_00, 0);
 	}
-	
-	// draw finishing screen if the game is over
-	// Otherwise, increase counter (render on and on and on...)
-	if (isGameOver())
-		GameOver();
-	else
-		SystickCounter++;
 }
 
 
 // Called at 50Hz
 void SysTick_Handler(void){
 	// calculate only if game is still running
-	if (!isGameOver())
+	if (!isGameOver()) {
+		// clear whole screen buffer before changing screen
+		Nokia5110_ClearBuffer();
 		GameEngineOperations();
-	else if (Fire_Button_Pressed() & fireButtonReleased)
-		RestartGame();
+		
+		// render all objects
+		RenderingOperations();
+		SystickCounter++;
+		Flag = 1;
+	}
+	else if (LastScreenCounter == 0) {
+		if (Fire_Button_Pressed() && fireButtonReleased)
+			RestartGame();
+	}
 	
-	// render all objects
-	RenderingOperations();
-	
-	// set systick executed flag
-	Flag = 1;
+	// draw finishing screen if the game is over
+	// Otherwise, increase counter (render on and on and on...)
+	if (isGameOver())
+		GameOver();
 }
 
 // initialization of all pins
@@ -733,4 +793,41 @@ void Delay100ms(unsigned long count){
     }
     count--;
   }
+}
+
+// print statistics about the finished game
+void Print_Statistics(void) {
+	// memorize best result
+	if (EnemiesKilledCounter > EnemiesKilledBest) {
+		SystickBest = SystickCounter;
+		EnemiesKilledBest = EnemiesKilledCounter;
+	}
+	
+	Nokia5110_Clear();
+	
+	Nokia5110_SetCursor(0, 0);
+	Nokia5110_OutString("You killed");
+	Nokia5110_SetCursor(0, 1);
+	Nokia5110_OutUDec(EnemiesKilledCounter);
+	Nokia5110_SetCursor(6, 1);
+	Nokia5110_OutString("beasts");
+	Nokia5110_SetCursor(0, 2);
+	Nokia5110_OutString("in");
+	Nokia5110_SetCursor(3, 2);
+	Nokia5110_OutUDec(SystickCounter/50);
+	Nokia5110_SetCursor(8, 2);
+	Nokia5110_OutString("sec.");
+	
+	Nokia5110_SetCursor(0, 3);
+	Nokia5110_OutString("Record is");
+	Nokia5110_SetCursor(0, 4);
+	Nokia5110_OutUDec(EnemiesKilledBest);
+	Nokia5110_SetCursor(6, 4);
+	Nokia5110_OutString("beasts");
+	Nokia5110_SetCursor(0, 5);
+	Nokia5110_OutString("in");
+	Nokia5110_SetCursor(3, 5);
+	Nokia5110_OutUDec(SystickBest/50);
+	Nokia5110_SetCursor(8, 5);
+	Nokia5110_OutString("sec.");
 }

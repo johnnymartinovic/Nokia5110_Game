@@ -81,6 +81,8 @@ void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
 
 int main(void){
+	int i;
+	
 	TExaS_Init(SSI0_Real_Nokia5110_Scope);  // set system clock to 80 MHz
 	
 	DisableInterrupts();
@@ -104,36 +106,32 @@ int main(void){
 	RestartGame();
 	
 	// Countdown, after which all interrupts are enabled!
-	// print 3
-	Nokia5110_ClearBuffer();
-	Nokia5110_PrintBMP(28, 41, _my_Countdown_03, 0);
-	Nokia5110_DisplayBuffer();
-	Delay100ms(3);
-	// print 2
-	Nokia5110_ClearBuffer();
-	Nokia5110_PrintBMP(28, 41, _my_Countdown_02, 0);
-	Nokia5110_DisplayBuffer();
-	Delay100ms(3);
-	// print 1
-	Nokia5110_ClearBuffer();
-	Nokia5110_PrintBMP(28, 41, _my_Countdown_01, 0);
-	Nokia5110_DisplayBuffer();
-	Delay100ms(3);
-	// print GO
-	Nokia5110_ClearBuffer();
-	Nokia5110_PrintBMP(28, 41, _my_Countdown_GO, 0);
-	Nokia5110_DisplayBuffer();
-	Delay100ms(3);
-	
+	for (i = 0; i < 4; i++) {
+		Nokia5110_ClearBuffer();
+		Nokia5110_PrintBMP(28, 41, _my_counter_ptr[i], 0);
+		Nokia5110_DisplayBuffer();
+		Delay100ms(10);
+	}	
 	
 	EnableInterrupts();
 	
   while(1){
+		// this literally means that the time has run up to the last screen and
+		// rendering of buffer
+		if ((LastScreenCounter == 0) && (statisticsPrinted == 0)){
+			Print_Statistics();
+			
+			// statistics printed
+			statisticsPrinted = 1;
+			
+			continue;
+		}
+		
+		// render if systick set the flag
 		if (Flag == 1) {
 			Nokia5110_DisplayBuffer();
 			
 			Flag = 0;
 		}
 	}
-	
 }

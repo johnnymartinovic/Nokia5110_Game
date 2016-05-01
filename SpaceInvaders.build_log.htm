@@ -12,20 +12,106 @@ assembling startup.s...
 compiling Nokia5110.c...
 assembling random.s...
 compiling SpaceInvaders.c...
-HandlersOps.c(287): error:  #29: expected an expression
-        for(int i=0; i<NumberOfEnemies; i++){
-HandlersOps.c(287): error:  #20: identifier "i" is undefined
-        for(int i=0; i<NumberOfEnemies; i++){
-HandlersOps.c(298): error:  #18: expected a ")"
-        Enemy[enemyNum].x = maxX + distanceBetweenEnemies;
-HandlersOps.c(305): warning:  #12-D: parsing restarts here after previous syntax error
-  }
-HandlersOps.c(305): error:  #127: expected a statement
-  }
-SpaceInvaders.c: 1 warning, 4 errors
 compiling TExaS.c...
-".\SpaceInvaders.axf" - 4 Error(s), 1 Warning(s).
+linking...
+Program Size: Code=8836 RO-data=19376 RW-data=208 ZI-data=2376  
+".\SpaceInvaders.axf" - 0 Error(s), 0 Warning(s).
+Load "E:\\Keil\\Labware\\Lab15_SpaceInvaders\\SpaceInvaders.axf" 
+Connecting: Mode=JTAG, Speed=1000000Hz
+Erase Done.
+Programming Done.
+Verify OK.
+c...
+".\SpaceInvaders.axf" - 2 Error(s), 1 Warning(s).
 Target not created
-</pre>
-</body>
-</html>
+Load "E:\\Keil\\Labware\\Lab15_SpaceInvaders\\SpaceInvaders.axf" 
+_____^
+*** error 56: cannot open file
+Error: Flash Download failed  -  Could not load file 'E:\Keil\Labware\Lab15_SpaceInvaders\SpaceInvaders.axf'
+  Nokia5110_Clear();
+HandlersOps.c(806): error:  #79: expected a type specifier
+        Nokia5110_SetCursor(0, 0);
+HandlersOps.c(806): error:  #79: expected a type specifier
+        Nokia5110_SetCursor(0, 0);
+HandlersOps.c(806): warning:  #77-D: this declaration has no storage class or type specifier
+        Nokia5110_SetCursor(0, 0);
+HandlersOps.c(806): error:  #147: declaration is incompatible with "void Nokia5110_SetCursor(unsigned char, unsigned char)" (declared at line 222 of "Nokia5110.h")
+        Nokia5110_SetCursor(0, 0);
+HandlersOps.c(807): error:  #79: expected a type specifier
+        Nokia5110_OutString("You killed");
+HandlersOps.c(807): warning:  #77-D: this declaration has no storage class or type specifier
+        Nokia5110_OutString("You killed");
+HandlersOps.c(807): error:  #147: declaration is incompatible with "void Nokia5110_OutString(char *)" (declared at line 205 of "Nokia5110.h")
+        Nokia5110_OutString("You killed");
+HandlersOps.c(808): error:  #79: expected a type specifier
+        Nokia5110_SetCursor(0, 1);
+HandlersOps.c(808): error:  #79: expected a type specifier
+        Nokia5110_SetCursor(0, 1);
+HandlersOps.c(808): warning:  #77-D: this declaration has no storage class or type specifier
+        Nokia5110_SetCursor(0, 1);
+HandlersOps.c(809): warning:  #77-D: this declaration has no storage class or type specifier
+        Nokia5110_OutUDec(EnemiesKilledCounter);
+HandlersOps.c(809): error:  #92: identifier-list parameters may only be used in a function definition
+        Nokia5110_OutUDec(EnemiesKilledCounter);
+HandlersOps.c(809): error:  #147: declaration is incompatible with "void Nokia5110_OutUDec(unsigned short)" (declared at line 213 of "Nokia5110.h")
+        Nokia5110_OutUDec(EnemiesKilledCounter);
+HandlersOps.c(810): error:  #79: expected a type specifier
+        Nokia5110_SetCursor(6, 1);
+HandlersOps.c(810): error:  #79: expected a type specifier
+        Nokia5110_SetCursor(6, 1);
+HandlersOps.c(810): warning:  #77-D: this declaration has no storage class or type specifier
+        Nokia5110_SetCursor(6, 1);
+HandlersOps.c(811): error:  #79: expected a type specifier
+        Nokia5110_OutString("beasts");
+HandlersOps.c(811): warning:  #77-D: this declaration has no storage class or type specifier
+        Nokia5110_OutString("beasts");
+HandlersOps.c(812): error:  #79: expected a type specifier
+        Nokia5110_SetCursor(0, 2);
+HandlersOps.c(812): error:  #79: expected a type specifier
+        Nokia5110_SetCursor(0, 2);
+HandlersOps.c(812): warning:  #77-D: this declaration has no storage class or type specifier
+        Nokia5110_SetCursor(0, 2);
+HandlersOps.c(813): error:  #79: expected a type specifier
+        Nokia5110_OutString("in");
+HandlersOps.c(813): warning:  #77-D: this declaration has no storage class or type specifier
+        Nokia5110_OutString("in");
+HandlersOps.c(814): error:  #79: expected a type specifier
+        Nokia5110_SetCursor(3, 2);
+HandlersOps.c(814): error:  #79: expected a type specifier
+        Nokia5110_SetCursor(3, 2);
+HandlersOps.c(814): warning:  #77-D: this declaration has no storage class or type specifier
+        Nokia5110_SetCursor(3, 2);
+HandlersOps.c(815): error:  #757: variable "SystickCounter" is not a type name
+        Nokia5110_OutUDec(SystickCounter/50);
+HandlersOps.c(815): error:  #18: expected a ")"
+        Nokia5110_OutUDec(SystickCounter/50);
+HandlersOps.c(815): warning:  #77-D: this declaration has no storage class or type specifier
+        Nokia5110_OutUDec(SystickCounter/50);
+HandlersOps.c(816): error:  #79: expected a type specifier
+        Nokia5110_SetCursor(8, 2);
+HandlersOps.c(816): error:  #79: expected a type specifier
+        Nokia5110_SetCursor(8, 2);
+HandlersOps.c(816): warning:  #77-D: this declaration has no storage class or type specifier
+        Nokia5110_SetCursor(8, 2);
+HandlersOps.c(817): error:  #79: expected a type specifier
+        Nokia5110_OutString("sec.");
+HandlersOps.c(817): warning:  #77-D: this declaration has no storage class or type specifier
+        Nokia5110_OutString("sec.");
+HandlersOps.c(819): error:  #79: expected a type specifier
+        Nokia5110_SetCursor(0, 3);
+HandlersOps.c(819): error:  #79: expected a type specifier
+        Nokia5110_SetCursor(0, 3);
+HandlersOps.c(819): warning:  #77-D: this declaration has no storage class or type specifier
+        Nokia5110_SetCursor(0, 3);
+HandlersOps.c(820): error:  #79: expected a type specifier
+        Nokia5110_OutString("Record is");
+HandlersOps.c(820): warning:  #77-D: this declaration has no storage class or type specifier
+        Nokia5110_OutString("Record is");
+HandlersOps.c(821): error:  #79: expected a type specifier
+        Nokia5110_SetCursor(0, 4);
+HandlersOps.c(821): error:  #79: expected a type specifier
+        Nokia5110_SetCursor(0, 4);
+SpaceInvaders.c: 16 warnings, 30 errors
+compiling TExaS.c...
+".\SpaceInvaders.axf" - 30 Error(s), 16 Warning(s).
+Target not created
