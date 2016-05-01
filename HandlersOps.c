@@ -17,6 +17,8 @@ const unsigned char MaxEnemyLife = 5;
 const unsigned char MaxTokens = 3;
 // number of enemies
 const unsigned long NumberOfEnemies = 8;
+// distance between enemies
+const unsigned long distanceBetweenEnemies = 8;
 
 // define main ship
 GeneralSprite Ship;
@@ -268,7 +270,7 @@ void RestartGame(void) {
 	// majority of them will be off screen, and once they get
 	// in the screen, they will be alive
 	for(i=0; i<NumberOfEnemies; i++){
-    Enemy[i].x = SCREENW - Enemy[i].width - Enemy[i].width + (i/2)*(Enemy[i].width+8);
+    Enemy[i].x = SCREENW - Enemy[i].width - Enemy[i].width + (i/2)*(Enemy[i].width+distanceBetweenEnemies);
     Enemy[i].y = 22 + 15*(i%2);
     Enemy[i].life = MaxEnemyLife;
 		Enemy[i].onScreen = 0;
@@ -276,6 +278,30 @@ void RestartGame(void) {
 		Enemy[i].Missile.y = Enemy[i].y - Enemy[i].height/2;
 		Enemy[i].Missile.life = 0;
 	}
+}
+
+// revive dead enemy
+void reviveEnemyIfPossible(unsigned char enemyNum) {
+	unsigned long maxX = 0;
+	// scroll through all enemies and find the furthest one
+	for(int i=0; i<NumberOfEnemies; i++){
+		// skip enemy himself or the dead ones
+		if ((i == enemyNum) || (Enemy[i].life == 0))
+			continue;
+		
+		if (Enemy[i].x > maxX)
+			maxX = Enemy[i].x;
+	}
+	
+	if (maxX + Enemy[i].width/2+ Enemy[enemyNum].width < 
+
+	Enemy[enemyNum].x = maxX + distanceBetweenEnemies;
+	Enemy[enemyNum].y = 22 + 15*(i%2);
+	Enemy[enemyNum].life = MaxEnemyLife;
+	Enemy[enemyNum].onScreen = 0;
+	Enemy[enemyNum].Missile.x = Enemy[i].x - Enemy[i].Missile.width;
+	Enemy[enemyNum].Missile.y = Enemy[i].y - Enemy[i].height/2;
+	Enemy[enemyNum].Missile.life = 0;
 }
 
 unsigned char isEnemyOnScreen(unsigned char enemyNum) {
@@ -502,6 +528,10 @@ void GameEngineOperations(void) {
 				}
 			}
     }
+		// if enemy is dead, create another one
+		else {
+			reviveEnemyIfPossible(i);
+		}
   }
 	
 	
