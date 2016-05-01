@@ -87,9 +87,11 @@ int main(void){
 	
 	
 	Random_Init(1);
+	
   Nokia5110_Init();
   Nokia5110_ClearBuffer();
 	Nokia5110_DisplayBuffer();
+	
 	SysTick_Init();
 	// initialize Timer2 after Nokia5110_Init because of
 	// error-prone registers operations (old and new registers
@@ -98,55 +100,33 @@ int main(void){
 	Timer2_Init(7256);
 	Ports_Init();
 	
-	InitSprites();
+	InitSprites(NumberOfEnemies);
+	RestartGame();
 	
 	// Countdown, after which all interrupts are enabled!
 	// print 3
 	Nokia5110_ClearBuffer();
 	Nokia5110_PrintBMP(28, 41, _my_Countdown_03, 0);
 	Nokia5110_DisplayBuffer();
-	Delay100ms(1);
-	
+	Delay100ms(3);
 	// print 2
 	Nokia5110_ClearBuffer();
 	Nokia5110_PrintBMP(28, 41, _my_Countdown_02, 0);
 	Nokia5110_DisplayBuffer();
-	Delay100ms(1);
+	Delay100ms(3);
 	// print 1
 	Nokia5110_ClearBuffer();
 	Nokia5110_PrintBMP(28, 41, _my_Countdown_01, 0);
 	Nokia5110_DisplayBuffer();
-	Delay100ms(1);
+	Delay100ms(3);
 	// print GO
 	Nokia5110_ClearBuffer();
 	Nokia5110_PrintBMP(28, 41, _my_Countdown_GO, 0);
 	Nokia5110_DisplayBuffer();
-	Delay100ms(1);
+	Delay100ms(3);
 	
 	
 	EnableInterrupts();
-
-  /*
-	Nokia5110_PrintBMP(32, 47, PlayerShip0, 0); // player ship middle bottom
-  Nokia5110_PrintBMP(33, 47 - PLAYERH, Bunker0, 0);
-
-  Nokia5110_PrintBMP(0, ENEMY10H - 1, SmallEnemy10PointA, 0);
-  Nokia5110_PrintBMP(16, ENEMY10H - 1, SmallEnemy20PointA, 0);
-  Nokia5110_PrintBMP(32, ENEMY10H - 1, SmallEnemy20PointA, 0);
-  Nokia5110_PrintBMP(48, ENEMY10H - 1, SmallEnemy30PointA, 0);
-  Nokia5110_PrintBMP(64, ENEMY10H - 1, SmallEnemy30PointA, 0);
-	
-  Nokia5110_Clear();
-  Nokia5110_SetCursor(1, 1);
-  Nokia5110_OutString("GAME OVER");
-  Nokia5110_SetCursor(1, 2);
-  Nokia5110_OutString("Nice try,");
-  Nokia5110_SetCursor(1, 3);
-  Nokia5110_OutString("Earthling!");
-  Nokia5110_SetCursor(2, 4);
-  Nokia5110_OutUDec(1234);
-	
-	*/
 	
   while(1){
 		if (Flag == 1) {

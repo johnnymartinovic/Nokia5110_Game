@@ -212,9 +212,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>169</LineNumber>
+          <LineNumber>481</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>3644</Address>
+          <Address>2332</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -223,12 +223,12 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>HandlersOps.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression></Expression>
+          <Expression>\\SpaceInvaders\HandlersOps.c\481</Expression>
         </Bp>
         <Bp>
           <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>181</LineNumber>
+          <LineNumber>497</LineNumber>
           <EnabledFlag>1</EnabledFlag>
           <Address>0</Address>
           <ByteObject>0</ByteObject>
@@ -268,7 +268,59 @@
           <WinNumber>1</WinNumber>
           <ItemText>temp</ItemText>
         </Ww>
+        <Ww>
+          <count>5</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>NVIC_ST_RELOAD_R</ItemText>
+        </Ww>
       </WatchWindow1>
+      <WatchWindow2>
+        <Ww>
+          <count>0</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>GameMaxY-GameMinY+1,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>1</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>GameMaxY,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>2</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>GameMinY,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>3</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>temp02</ItemText>
+        </Ww>
+        <Ww>
+          <count>4</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>Random_Drawable_X_Pos((SpecialImagePointers[i])[18])</ItemText>
+        </Ww>
+        <Ww>
+          <count>5</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>Enemy[i].x,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>6</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>Enemy[i].y,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>7</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>i</ItemText>
+        </Ww>
+        <Ww>
+          <count>8</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>Enemy[i].onScreen</ItemText>
+        </Ww>
+      </WatchWindow2>
       <Tracepoint>
         <THDelay>0</THDelay>
       </Tracepoint>
@@ -317,7 +369,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>275</TopLine>
+      <TopLine>268</TopLine>
       <CurrentLine>277</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\startup.s</PathWithFileName>
@@ -333,8 +385,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>206</TopLine>
-      <CurrentLine>209</CurrentLine>
+      <TopLine>357</TopLine>
+      <CurrentLine>360</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\Nokia5110.c</PathWithFileName>
       <FilenameWithoutPath>Nokia5110.c</FilenameWithoutPath>
@@ -347,10 +399,10 @@
       <FileType>2</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>18</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>13</TopLine>
+      <CurrentLine>52</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\random.s</PathWithFileName>
       <FilenameWithoutPath>random.s</FilenameWithoutPath>
@@ -365,7 +417,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>81</TopLine>
+      <TopLine>75</TopLine>
       <CurrentLine>84</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\SpaceInvaders.c</PathWithFileName>
